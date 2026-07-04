@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
---  Part C:  SQL Script  (CREATE TABLES + sample data)
+-- SQL Script  (CREATE TABLES + sample data)
 
 
 SET SERVEROUTPUT ON;

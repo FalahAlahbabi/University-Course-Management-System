@@ -1,5 +1,4 @@
 ------------------------------------------------------------------------
---  Part D:  PL/SQL Programs
 --  1.  Function  calculate_gpa
 --  2.  Trigger   enforce_instructor_schedule_conflict
 --  3.  Procedure generate_student_transcript

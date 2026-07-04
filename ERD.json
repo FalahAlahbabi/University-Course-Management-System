@@ -1,0 +1,174 @@
+{
+  "diagram": "Entity-Relationship Diagram",
+  "system": "University Course Management System",
+  "notation": "Chen",
+  "entities": [
+    {
+      "name": "Department",
+      "attributes": [
+        { "name": "DepartmentID",   "isPrimaryKey": true },
+        { "name": "DeptName" },
+        { "name": "OfficeLocation" },
+        { "name": "PhoneNumber" }
+      ]
+    },
+    {
+      "name": "Instructor",
+      "attributes": [
+        { "name": "InstructorID", "isPrimaryKey": true },
+        { "name": "FirstName" },
+        { "name": "LastName" },
+        { "name": "Email" },
+        { "name": "Phone" },
+        { "name": "HireDate" }
+      ]
+    },
+    {
+      "name": "Student",
+      "attributes": [
+        { "name": "StudentID", "isPrimaryKey": true },
+        { "name": "FirstName" },
+        { "name": "LastName" },
+        { "name": "Email" },
+        { "name": "DOB" },
+        { "name": "Gender" },
+        { "name": "EnrollmentYear" }
+      ]
+    },
+    {
+      "name": "Course",
+      "attributes": [
+        { "name": "CourseID", "isPrimaryKey": true },
+        { "name": "Title" },
+        { "name": "CreditHours" }
+      ]
+    },
+    {
+      "name": "Course_Section",
+      "attributes": [
+        { "name": "SectionID", "isPrimaryKey": true },
+        { "name": "SectionNumber" },
+        { "name": "Semester" },
+        { "name": "Year" },
+        { "name": "MeetingDay" },
+        { "name": "StartTime" },
+        { "name": "EndTime" }
+      ]
+    },
+    {
+      "name": "Classroom",
+      "attributes": [
+        { "name": "RoomID", "isPrimaryKey": true },
+        { "name": "BuildingName" },
+        { "name": "RoomNumber" },
+        { "name": "Capacity" }
+      ]
+    },
+    {
+      "name": "Exam",
+      "attributes": [
+        { "name": "ExamID", "isPrimaryKey": true },
+        { "name": "ExamType" },
+        { "name": "ExamDate" },
+        { "name": "MaxMarks" }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "chairs",
+      "between": ["Department", "Instructor"],
+      "cardinality": "1:1",
+      "description": "Each department is led by exactly one instructor (the chair).",
+      "attributes": []
+    },
+    {
+      "name": "works in",
+      "between": ["Department", "Instructor"],
+      "cardinality": "1:N",
+      "description": "An instructor belongs to one department; a department has many instructors.",
+      "attributes": []
+    },
+    {
+      "name": "offers",
+      "between": ["Department", "Course"],
+      "cardinality": "1:N",
+      "description": "A course belongs to one department; a department offers many courses.",
+      "attributes": []
+    },
+    {
+      "name": "majors in",
+      "between": ["Department", "Student"],
+      "cardinality": "1:N",
+      "description": "A student is majoring in one department.",
+      "attributes": []
+    },
+    {
+      "name": "advises",
+      "between": ["Instructor", "Student"],
+      "cardinality": "1:N",
+      "description": "Each student has one academic advisor; an instructor may advise many students.",
+      "attributes": []
+    },
+    {
+      "name": "teaches (team)",
+      "between": ["Instructor", "Course"],
+      "cardinality": "M:N",
+      "description": "A course can be taught by multiple instructors (team teaching).",
+      "attributes": []
+    },
+    {
+      "name": "has section",
+      "between": ["Course", "Course_Section"],
+      "cardinality": "1:N",
+      "description": "A course can have multiple sections in the same semester.",
+      "attributes": []
+    },
+    {
+      "name": "teaches",
+      "between": ["Instructor", "Course_Section"],
+      "cardinality": "1:N",
+      "description": "Each section is taught by exactly one instructor.",
+      "attributes": []
+    },
+    {
+      "name": "hosted in",
+      "between": ["Classroom", "Course_Section"],
+      "cardinality": "1:N",
+      "description": "Each section is held in one classroom; a classroom hosts many sections (not at the same time).",
+      "attributes": []
+    },
+    {
+      "name": "enrolls",
+      "between": ["Student", "Course_Section"],
+      "cardinality": "M:N",
+      "description": "A student enrolls in one section per course; each section has many students.",
+      "attributes": [
+        { "name": "Status",     "domain": ["Enrolled", "Completed", "Dropped"] },
+        { "name": "FinalGrade", "domain": ["A+","A","A-","B+","B","B-","C+","C","C-","D+","D","F","W"] }
+      ]
+    },
+    {
+      "name": "has",
+      "between": ["Course_Section", "Exam"],
+      "cardinality": "1:N",
+      "description": "A section can have multiple exams.",
+      "attributes": []
+    },
+    {
+      "name": "takes",
+      "between": ["Student", "Exam"],
+      "cardinality": "M:N",
+      "description": "Each student can have at most one result per exam; each exam has many results.",
+      "attributes": [
+        { "name": "MarksObtained" }
+      ]
+    }
+  ],
+  "constraints": [
+    "Classroom capacity must not be exceeded.",
+    "An instructor cannot teach two sections at the same time.",
+    "Grades are only assigned after course completion.",
+    "A department's chair must be an instructor in that same department."
+  ]
+}

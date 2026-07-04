@@ -1,0 +1,176 @@
+{
+  "diagram": "Relational Database Schema",
+  "system": "University Course Management System",
+  "dbms": "Oracle",
+  "tables": [
+    {
+      "name": "Departments",
+      "primaryKey": ["DepartmentID"],
+      "columns": [
+        { "name": "DepartmentID",   "type": "NUMBER(5)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "DeptName",       "type": "VARCHAR2(60)", "nullable": false, "unique": true },
+        { "name": "OfficeLocation", "type": "VARCHAR2(50)", "nullable": true  },
+        { "name": "PhoneNumber",    "type": "VARCHAR2(20)", "nullable": true  },
+        { "name": "ChairID",        "type": "NUMBER(5)",    "nullable": true,
+          "isForeignKey": true,
+          "references": { "table": "Instructors", "column": "InstructorID" } }
+      ]
+    },
+    {
+      "name": "Instructors",
+      "primaryKey": ["InstructorID"],
+      "columns": [
+        { "name": "InstructorID", "type": "NUMBER(5)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "FirstName",    "type": "VARCHAR2(30)", "nullable": false },
+        { "name": "LastName",     "type": "VARCHAR2(30)", "nullable": false },
+        { "name": "Email",        "type": "VARCHAR2(80)", "nullable": true,  "unique": true },
+        { "name": "Phone",        "type": "VARCHAR2(20)", "nullable": true  },
+        { "name": "HireDate",     "type": "DATE",         "nullable": true  },
+        { "name": "DepartmentID", "type": "NUMBER(5)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Departments", "column": "DepartmentID" } }
+      ]
+    },
+    {
+      "name": "Students",
+      "primaryKey": ["StudentID"],
+      "columns": [
+        { "name": "StudentID",      "type": "NUMBER(7)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "FirstName",      "type": "VARCHAR2(30)", "nullable": false },
+        { "name": "LastName",       "type": "VARCHAR2(30)", "nullable": false },
+        { "name": "Email",          "type": "VARCHAR2(80)", "nullable": true,  "unique": true },
+        { "name": "DOB",            "type": "DATE",         "nullable": true  },
+        { "name": "Gender",         "type": "CHAR(1)",      "nullable": true,  "check": "Gender IN ('M','F')" },
+        { "name": "EnrollmentYear", "type": "NUMBER(4)",    "nullable": true  },
+        { "name": "MajorDeptID",    "type": "NUMBER(5)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Departments", "column": "DepartmentID" } },
+        { "name": "AdvisorID",      "type": "NUMBER(5)",    "nullable": true,
+          "isForeignKey": true,
+          "references": { "table": "Instructors", "column": "InstructorID" } }
+      ]
+    },
+    {
+      "name": "Courses",
+      "primaryKey": ["CourseID"],
+      "columns": [
+        { "name": "CourseID",     "type": "VARCHAR2(10)", "nullable": false, "isPrimaryKey": true },
+        { "name": "Title",        "type": "VARCHAR2(80)", "nullable": false },
+        { "name": "CreditHours",  "type": "NUMBER(2)",    "nullable": true,  "check": "CreditHours BETWEEN 1 AND 6" },
+        { "name": "DepartmentID", "type": "NUMBER(5)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Departments", "column": "DepartmentID" } }
+      ]
+    },
+    {
+      "name": "Classrooms",
+      "primaryKey": ["RoomID"],
+      "columns": [
+        { "name": "RoomID",       "type": "NUMBER(5)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "BuildingName", "type": "VARCHAR2(40)", "nullable": false },
+        { "name": "RoomNumber",   "type": "VARCHAR2(10)", "nullable": false },
+        { "name": "Capacity",     "type": "NUMBER(4)",    "nullable": true,  "check": "Capacity > 0" }
+      ]
+    },
+    {
+      "name": "Course_Sections",
+      "primaryKey": ["SectionID"],
+      "columns": [
+        { "name": "SectionID",     "type": "NUMBER(7)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "CourseID",      "type": "VARCHAR2(10)", "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Courses", "column": "CourseID" } },
+        { "name": "InstructorID",  "type": "NUMBER(5)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Instructors", "column": "InstructorID" } },
+        { "name": "RoomID",        "type": "NUMBER(5)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Classrooms", "column": "RoomID" } },
+        { "name": "Semester",      "type": "VARCHAR2(10)", "nullable": true,  "check": "Semester IN ('Fall','Spring','Summer')" },
+        { "name": "SectYear",      "type": "NUMBER(4)",    "nullable": true  },
+        { "name": "SectionNumber", "type": "NUMBER(2)",    "nullable": true  },
+        { "name": "MeetingDay",    "type": "VARCHAR2(10)", "nullable": true,
+          "check": "MeetingDay IN ('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')" },
+        { "name": "StartTime",     "type": "VARCHAR2(5)",  "nullable": true  },
+        { "name": "EndTime",       "type": "VARCHAR2(5)",  "nullable": true  }
+      ]
+    },
+    {
+      "name": "Course_Instructors",
+      "isBridgeTable": true,
+      "resolves": "M:N team-teaching between Course and Instructor",
+      "primaryKey": ["CourseID", "InstructorID"],
+      "columns": [
+        { "name": "CourseID",     "type": "VARCHAR2(10)", "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Courses", "column": "CourseID" } },
+        { "name": "InstructorID", "type": "NUMBER(5)",    "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Instructors", "column": "InstructorID" } }
+      ]
+    },
+    {
+      "name": "Course_Grade",
+      "isBridgeTable": true,
+      "resolves": "M:N enrollment between Student and Course_Section",
+      "primaryKey": ["StudentID", "SectionID"],
+      "columns": [
+        { "name": "StudentID",  "type": "NUMBER(7)",   "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Students", "column": "StudentID" } },
+        { "name": "SectionID",  "type": "NUMBER(7)",   "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Course_Sections", "column": "SectionID" } },
+        { "name": "Status",     "type": "VARCHAR2(10)","nullable": true,
+          "check": "Status IN ('Enrolled','Completed','Dropped')" },
+        { "name": "FinalGrade", "type": "VARCHAR2(2)", "nullable": true,
+          "check": "FinalGrade IN ('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','F','W')" }
+      ]
+    },
+    {
+      "name": "Exams",
+      "primaryKey": ["ExamID"],
+      "columns": [
+        { "name": "ExamID",    "type": "NUMBER(7)",    "nullable": false, "isPrimaryKey": true },
+        { "name": "SectionID", "type": "NUMBER(7)",    "nullable": false,
+          "isForeignKey": true,
+          "references": { "table": "Course_Sections", "column": "SectionID" } },
+        { "name": "ExamType",  "type": "VARCHAR2(15)", "nullable": true,  "check": "ExamType IN ('Midterm','Final','Quiz')" },
+        { "name": "ExamDate",  "type": "DATE",         "nullable": true  },
+        { "name": "MaxMarks",  "type": "NUMBER(5,2)",  "nullable": true,  "check": "MaxMarks > 0" }
+      ]
+    },
+    {
+      "name": "Exam_Results",
+      "isBridgeTable": true,
+      "resolves": "M:N takes between Student and Exam",
+      "primaryKey": ["StudentID", "ExamID"],
+      "columns": [
+        { "name": "StudentID",     "type": "NUMBER(7)",   "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Students", "column": "StudentID" } },
+        { "name": "ExamID",        "type": "NUMBER(7)",   "nullable": false, "isPrimaryKey": true,
+          "isForeignKey": true,
+          "references": { "table": "Exams", "column": "ExamID" } },
+        { "name": "MarksObtained", "type": "NUMBER(5,2)", "nullable": true,  "check": "MarksObtained >= 0" }
+      ]
+    }
+  ],
+  "foreignKeySummary": [
+    { "from": "Departments.ChairID",          "to": "Instructors.InstructorID",     "cardinality": "N:1" },
+    { "from": "Instructors.DepartmentID",     "to": "Departments.DepartmentID",     "cardinality": "N:1" },
+    { "from": "Students.MajorDeptID",         "to": "Departments.DepartmentID",     "cardinality": "N:1" },
+    { "from": "Students.AdvisorID",           "to": "Instructors.InstructorID",     "cardinality": "N:1" },
+    { "from": "Courses.DepartmentID",         "to": "Departments.DepartmentID",     "cardinality": "N:1" },
+    { "from": "Course_Sections.CourseID",     "to": "Courses.CourseID",             "cardinality": "N:1" },
+    { "from": "Course_Sections.InstructorID", "to": "Instructors.InstructorID",     "cardinality": "N:1" },
+    { "from": "Course_Sections.RoomID",       "to": "Classrooms.RoomID",            "cardinality": "N:1" },
+    { "from": "Course_Instructors.CourseID",  "to": "Courses.CourseID",             "cardinality": "N:1" },
+    { "from": "Course_Instructors.InstructorID","to": "Instructors.InstructorID",   "cardinality": "N:1" },
+    { "from": "Course_Grade.StudentID",       "to": "Students.StudentID",           "cardinality": "N:1" },
+    { "from": "Course_Grade.SectionID",       "to": "Course_Sections.SectionID",    "cardinality": "N:1" },
+    { "from": "Exams.SectionID",              "to": "Course_Sections.SectionID",    "cardinality": "N:1" },
+    { "from": "Exam_Results.StudentID",       "to": "Students.StudentID",           "cardinality": "N:1" },
+    { "from": "Exam_Results.ExamID",          "to": "Exams.ExamID",                 "cardinality": "N:1" }
+  ]
+}
